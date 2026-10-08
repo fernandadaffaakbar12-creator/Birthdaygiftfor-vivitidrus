@@ -357,7 +357,7 @@
                         if (pinInput.value === SECRET_PIN) {
                             // PIN BENAR
                             showPinPopup({
-                                message: 'Valid!\nLanjut yaa~',
+                                message: 'Valid!\nLanjut yaa sayang~',
                                 buttonText: 'Lanjut 💕'
                             }, true);
 
