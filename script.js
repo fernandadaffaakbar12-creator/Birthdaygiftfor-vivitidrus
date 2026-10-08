@@ -245,7 +245,7 @@
         const pinPopupClose = document.getElementById('pin-popup-close');
 
         // DEFAULT PIN: Silakan ubah angka ini jika ingin PIN lain
-        const SECRET_PIN = "2704";
+        const SECRET_PIN = "0910";
 
         let pinAttempt = 0;
         let popupTimeout = null;
@@ -256,7 +256,7 @@
                 // Percobaan pertama: tampilkan foto kucing
                 showCat: true,
                 emoji: '',
-                message: 'Masa tanggal spesial kita lupa?',
+                message: 'Masa tanggal lahir sendiri lupa?',
                 buttonText: 'Iya iya maaf 😭'
             },
             {
@@ -584,7 +584,7 @@ function tutupModal() {
 }
 
 // ==========================================
-// 1.B PENGATURAN VIDEO CORE MEMORIES & KUNCIAN ORIENTASI
+// 1.B PENGATURAN VIDEO CORE MEMORIES
 // ==========================================
 function initVideoMemories() {
     const videos = document.querySelectorAll('.memory-video');
@@ -600,59 +600,6 @@ function initVideoMemories() {
             // Lagu latar (bg-music) tetap terus berputar tanpa dijeda
         });
     });
-
-    // Pengecekan orientasi layar
-    function checkOrientation() {
-        const isLandscape = window.matchMedia("(orientation: landscape)").matches || (window.innerWidth > window.innerHeight);
-        const isMobile = window.innerWidth <= 768 || ('ontouchstart' in window && window.innerWidth <= 900);
-
-        const overlays = document.querySelectorAll('.rotate-lock-overlay');
-        overlays.forEach(overlay => {
-            if (isMobile && !isLandscape) {
-                // Di HP mode vertikal: tampilkan overlay & pause video
-                overlay.style.display = 'flex';
-                videos.forEach(v => {
-                    if (!v.paused) v.pause();
-                });
-            } else {
-                // Di mode horizontal atau di desktop: sembunyikan overlay
-                overlay.style.display = 'none';
-            }
-        });
-    }
-
-    window.addEventListener('resize', checkOrientation);
-    window.addEventListener('orientationchange', function () {
-        setTimeout(checkOrientation, 250);
-    });
-    checkOrientation();
-}
-
-// Handler tombol putar layar penuh (fullscreen)
-function handleRotateAndPlay(videoId) {
-    const video = document.getElementById('video-memories-' + videoId);
-    if (!video) return;
-
-    const overlay = document.getElementById('rotate-overlay-' + videoId);
-    if (overlay) {
-        overlay.style.display = 'none';
-    }
-
-    // Masuk fullscreen dan coba kunci orientasi horizontal
-    if (video.requestFullscreen) {
-        video.requestFullscreen().catch(() => {});
-    } else if (video.webkitRequestFullscreen) {
-        video.webkitRequestFullscreen();
-    } else if (video.webkitEnterFullscreen) {
-        // Safari iOS
-        video.webkitEnterFullscreen();
-    }
-
-    if (screen.orientation && screen.orientation.lock) {
-        screen.orientation.lock('landscape').catch(() => {});
-    }
-
-    video.play().catch(() => {});
 }
 
 // ==========================================
@@ -959,20 +906,38 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     canvases.forEach((canvas, index) => {
+        const card = canvas.closest('.scratch-card') || canvas.parentElement;
         const ctx = canvas.getContext('2d');
         let isDrawing = false;
-        let brushRadius = 25;
+        let brushRadius = 26;
         let drawMoveCount = 0;
+        let isConfigured = false;
 
-        setTimeout(() => {
-            canvas.width = 220;
-            canvas.height = Math.round(220 * 16 / 9);
+        function configureCanvas() {
+            if (clearedSet.has(index)) return;
+            const rect = card ? card.getBoundingClientRect() : canvas.getBoundingClientRect();
+            let w = Math.round(rect.width);
+            let h = Math.round(rect.height);
+
+            // Fallback ukuran rasio 3:4 jika kontainer masih hidden saat load
+            if (!w || !h) {
+                const isMobile = window.innerWidth <= 600;
+                w = isMobile ? Math.min(285, Math.round(window.innerWidth * 0.82)) : 260;
+                h = Math.round(w * 4 / 3);
+            }
+
+            if (isConfigured && canvas.width === w && canvas.height === h) return;
+
+            canvas.width = w;
+            canvas.height = h;
+            brushRadius = Math.max(26, Math.round(w * 0.1));
 
             ctx.fillStyle = '#FFF0F5';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Glitter emas kecil-kecil
-            for (let i = 0; i < 300; i++) {
+            // Glitter cantik proporsional dengan luas kartu 3:4
+            const sparkleCount = Math.round((w * h) / 280);
+            for (let i = 0; i < sparkleCount; i++) {
                 ctx.beginPath();
                 ctx.arc(
                     Math.random() * canvas.width,
@@ -993,63 +958,84 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             ctx.globalCompositeOperation = 'destination-out';
+            isConfigured = true;
+        }
 
-            const startPosition = (e) => {
-                isDrawing = true;
-                drawMoveCount = 0;
-                draw(e);
-            };
+        // Inisialisasi awal
+        setTimeout(configureCanvas, 300);
 
-            const endPosition = () => {
-                isDrawing = false;
-                ctx.beginPath();
-                // Cek setiap kali selesai menggosok
+        const startPosition = (e) => {
+            isDrawing = true;
+            drawMoveCount = 0;
+            draw(e);
+        };
+
+        const endPosition = () => {
+            isDrawing = false;
+            ctx.beginPath();
+            // Cek setiap kali selesai menggosok
+            checkCanvasCleared(canvas, index);
+        };
+
+        const draw = (e) => {
+            if (!isDrawing) return;
+
+            let clientX, clientY;
+            if (e.type.includes('touch')) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+
+            const canvasRect = canvas.getBoundingClientRect();
+            // Pemetaan koordinat akurat untuk rasio 3:4 & tampilan mobile
+            const scaleX = canvasRect.width ? (canvas.width / canvasRect.width) : 1;
+            const scaleY = canvasRect.height ? (canvas.height / canvasRect.height) : 1;
+            const x = (clientX - canvasRect.left) * scaleX;
+            const y = (clientY - canvasRect.top) * scaleY;
+
+            ctx.lineWidth = brushRadius * 2;
+            ctx.lineCap = 'round';
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+
+            // Juga cek selama menggosok setiap 15 gerakan
+            drawMoveCount++;
+            if (drawMoveCount % 15 === 0) {
                 checkCanvasCleared(canvas, index);
-            };
+            }
+        };
 
-            const draw = (e) => {
-                if (!isDrawing) return;
+        canvas.addEventListener('mousedown', startPosition);
+        canvas.addEventListener('mouseup', endPosition);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseleave', endPosition);
 
-                let clientX, clientY;
-                if (e.type.includes('touch')) {
-                    clientX = e.touches[0].clientX;
-                    clientY = e.touches[0].clientY;
-                } else {
-                    clientX = e.clientX;
-                    clientY = e.clientY;
-                }
+        canvas.addEventListener('touchstart', startPosition, { passive: true });
+        canvas.addEventListener('touchend', endPosition);
+        canvas.addEventListener('touchmove', (e) => {
+            if (isDrawing) e.preventDefault();
+            draw(e);
+        }, { passive: false });
 
-                const canvasRect = canvas.getBoundingClientRect();
-                const x = clientX - canvasRect.left;
-                const y = clientY - canvasRect.top;
-
-                ctx.lineWidth = brushRadius * 2;
-                ctx.lineCap = 'round';
-                ctx.lineTo(x, y);
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.moveTo(x, y);
-
-                // Juga cek selama menggosok setiap 15 gerakan
-                drawMoveCount++;
-                if (drawMoveCount % 15 === 0) {
-                    checkCanvasCleared(canvas, index);
-                }
-            };
-
-            canvas.addEventListener('mousedown', startPosition);
-            canvas.addEventListener('mouseup', endPosition);
-            canvas.addEventListener('mousemove', draw);
-            canvas.addEventListener('mouseleave', endPosition);
-
-            canvas.addEventListener('touchstart', startPosition, { passive: true });
-            canvas.addEventListener('touchend', endPosition);
-            canvas.addEventListener('touchmove', (e) => {
-                if (isDrawing) e.preventDefault();
-                draw(e);
-            }, { passive: false });
-
-        }, 500);
+        // Cek ulang ukuran saat elemen pertama kali terlihat / layout selesai
+        if (window.IntersectionObserver) {
+            const obs = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting && !clearedSet.has(index)) {
+                        const rect = card ? card.getBoundingClientRect() : canvas.getBoundingClientRect();
+                        if (rect.width > 0 && Math.abs(canvas.width - Math.round(rect.width)) > 5) {
+                            configureCanvas();
+                        }
+                    }
+                });
+            }, { threshold: 0.1 });
+            obs.observe(card || canvas);
+        }
     });
 });
 

@@ -1032,7 +1032,7 @@ body {
 }
 
 /* =========================================
-   GALERI SCROLL KE SAMPING 9:16 (Slide 4)
+   GALERI SCROLL KE SAMPING 3:4 (Slide 4 - Core Memories)
 ========================================= */
 .gallery-scroll {
     display: flex;
@@ -1110,9 +1110,9 @@ body {
 .scratch-card {
     position: relative;
     flex: 0 0 auto;
-    width: 220px;
-    aspect-ratio: 9 / 16;
-    border-radius: 10px;
+    width: 260px;
+    aspect-ratio: 3 / 4;
+    border-radius: 14px;
     border: 2px solid rgba(255, 105, 180, 0.4) !important;
     box-shadow: 0 4px 10px rgba(255, 20, 147, 0.3) !important;
     cursor: pointer;
@@ -1156,7 +1156,7 @@ body {
 .video-memories-wrapper {
     margin-top: 45px;
     width: 100%;
-    max-width: 780px;
+    max-width: 680px;
     margin-left: auto;
     margin-right: auto;
     box-sizing: border-box;
@@ -1218,8 +1218,8 @@ body {
 .video-frame-container {
     position: relative;
     width: 100%;
-    aspect-ratio: 16 / 9;
-    border-radius: 12px;
+    aspect-ratio: 368 / 496;
+    border-radius: 14px;
     overflow: hidden;
     background: #000;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
@@ -1230,7 +1230,7 @@ body {
     height: 100%;
     object-fit: cover;
     display: block;
-    border-radius: 12px;
+    border-radius: 14px;
 }
 
 .video-card-caption {
@@ -1246,96 +1246,6 @@ body {
     font-weight: 600;
     color: #c71585;
     letter-spacing: 0.5px;
-}
-
-/* OVERLAY KUNCI MODE HORIZONTAL (LANDSCAPE) */
-.rotate-lock-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(40, 5, 20, 0.88);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    display: none;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 15px;
-    box-sizing: border-box;
-    text-align: center;
-    z-index: 5;
-    transition: opacity 0.3s ease;
-}
-
-/* Saat layar HP mode portrait (vertikal) */
-@media (max-width: 768px) and (orientation: portrait) {
-    .rotate-lock-overlay {
-        display: flex;
-    }
-}
-
-/* Animasi Ikon Handphone Berputar */
-.rotate-phone-icon {
-    width: 44px;
-    height: 44px;
-    margin-bottom: 8px;
-    animation: rotate-phone-anim 2.5s ease-in-out infinite;
-}
-
-.phone-svg {
-    width: 100%;
-    height: 100%;
-}
-
-@keyframes rotate-phone-anim {
-    0%, 20% {
-        transform: rotate(0deg);
-    }
-    50%, 70% {
-        transform: rotate(-90deg);
-    }
-    100% {
-        transform: rotate(0deg);
-    }
-}
-
-.rotate-hint-title {
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: #fff;
-    margin: 0 0 4px 0;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-.rotate-hint-desc {
-    font-size: 0.78rem;
-    color: #ffb6c1;
-    margin: 0 0 10px 0;
-    line-height: 1.25;
-    max-width: 240px;
-}
-
-.btn-rotate-play {
-    background: linear-gradient(135deg, #ff1493, #ff69b4);
-    color: #fff;
-    border: none;
-    border-radius: 20px;
-    padding: 6px 16px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(255, 20, 147, 0.4);
-    transition: transform 0.2s, background 0.2s;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.btn-rotate-play:hover {
-    transform: scale(1.05);
-    background: linear-gradient(135deg, #e0007b, #ff1493);
 }
 
 /* =========================================
@@ -1675,10 +1585,27 @@ body {
         padding: 30px 15px;
     }
 
-    .glass-panel,
-    .photo-panel {
+    .glass-panel {
         padding: 25px 20px;
         margin-bottom: 50px;
+    }
+
+    .photo-panel {
+        padding: 25px 10px;
+        margin-bottom: 50px;
+    }
+
+    /* Core Memories (3:4) penyesuaian agar tidak terlihat kecil di mobile */
+    .gallery-scroll {
+        padding: 18px 8px;
+        gap: 16px;
+    }
+
+    .scratch-card {
+        width: 285px;
+        max-width: 82vw;
+        aspect-ratio: 3 / 4;
+        border-radius: 14px;
     }
 
     .aesthetic-font {
@@ -1704,12 +1631,14 @@ body {
 
     .video-cards-grid {
         grid-template-columns: 1fr;
-        gap: 18px;
+        gap: 24px;
+        max-width: 320px;
+        margin: 0 auto;
     }
 
     .video-card-item {
         padding: 10px;
-        border-radius: 14px;
+        border-radius: 16px;
     }
 
     .polaroid-wrapper {
@@ -2914,7 +2843,7 @@ body {
     }
 }
 /* =========================================
-   Custom Titles for Gallery
+   Custom Titles for Gallery & Core Memories
 ========================================= */
 .title-little-things {
     font-size: 2em;
@@ -2934,6 +2863,28 @@ body {
     white-space: nowrap;
 }
 
+.title-core-memories {
+    font-size: 2em;
+    display: inline-block;
+    padding: 20px 35px;
+    margin-bottom: -15px;
+    white-space: nowrap;
+    position: relative;
+    z-index: 2;
+}
+
+.title-of-us {
+    font-size: 1em;
+    display: inline-block;
+    padding: 15px 30px;
+    opacity: 0.9;
+    transform: translateX(40px);
+    color: #5a0022;
+    white-space: nowrap;
+    position: relative;
+    z-index: 1;
+}
+
 @media (max-width: 480px) {
     .title-little-things {
         font-size: 1.5em;
@@ -2944,17 +2895,28 @@ body {
         padding: 10px 20px;
         transform: translateX(20px);
     }
+    .title-core-memories {
+        font-size: 2em;
+        padding: 16px 28px;
+    }
+    .title-of-us {
+        font-size: 1em;
+        padding: 12px 22px;
+        transform: translateX(25px);
+    }
+    .scratch-card {
+        width: 280px;
+        max-width: 84vw;
+        aspect-ratio: 3 / 4;
+    }
 }
 
 /* Aturan khusus mode landscape di HP/tablet untuk video */
 @media (max-width: 950px) and (orientation: landscape) {
-    .rotate-lock-overlay {
-        display: none !important;
-    }
-
     .video-cards-grid {
         grid-template-columns: repeat(2, 1fr) !important;
         gap: 15px;
+        max-width: 680px;
     }
 }
 
